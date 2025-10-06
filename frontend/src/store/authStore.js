@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 
-const API_URL = "https://rk-sprinklers-backend.onrender.com/api/auth";
+const API_URL = "https://rk-sprinklers-backend.onrender.com";
 
 axios.defaults.withCredentials = true;
 
