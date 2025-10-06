@@ -53,34 +53,29 @@ signup: async (email, password, name, number, street, city, zipCode) => {
     }
 },
 
-login: async (email, password) => {
-    set({ isLoading: true, error: null });
-    try {
-        const response = await axios.post(
-            `${API_URL}/api/auth/login`,
-            { email, password },
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-        );
+    login: async (email, password) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.post(`${API_URL}/api/auth/login`, { email, password });
+            set((state) => ({
+                isAuthenticated: true,
+                user: response.data.user,
+                error: null,
+                isLoading: false,
+                redirectPath: state.redirectPath || "/"
+            }));
 
-        set((state) => ({
-            isAuthenticated: true,
-            user: response.data.user,
-            error: null,
-            isLoading: false,
-            redirectPath: state.redirectPath || "/"
-        }));
-
-        const logoutTime = Date.now() + 3600000;
-        localStorage.setItem("logoutTime", logoutTime);
-        scheduleAutoLogout();
-
-    } catch (error) {
-        set({ error: error.response?.data?.message || "Error logging in", isLoading: false });
-        throw error;
-    }
-},
+            const logoutTime = Date.now() + 3600000;
+            localStorage.setItem("logoutTime", logoutTime);
+            scheduleAutoLogout();
 
 
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Error logging in", isLoading: false });
+            throw error;
+        }
+    },
+    
     logout: async () => {
         set({ isLoading: true, error: null });
         try {
