@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 
-const API_URL = "https://rk-sprinklers-backend.onrender.com/api/auth";
+const API_URL = "https://rk-sprinklers-backend.onrender.com";
 
 axios.defaults.withCredentials = true;
 
@@ -37,7 +37,7 @@ export const useAuthStore = create((set) => ({
 signup: async (email, password, name, number, street, city, zipCode) => {
     set({ isLoading: true, error: null });
     try {
-        const response = await axios.post(`${API_URL}/signup`, {
+        const response = await axios.post(`${API_URL}/api/auth/signup`, {
             email,
             password,
             name,
@@ -53,33 +53,38 @@ signup: async (email, password, name, number, street, city, zipCode) => {
     }
 },
 
-    login: async (email, password) => {
-        set({ isLoading: true, error: null });
-        try {
-            const response = await axios.post(`${API_URL}/login`, { email, password });
-            set((state) => ({
-                isAuthenticated: true,
-                user: response.data.user,
-                error: null,
-                isLoading: false,
-                redirectPath: state.redirectPath || "/"
-            }));
+login: async (email, password) => {
+    set({ isLoading: true, error: null });
+    try {
+        const response = await axios.post(
+            `${API_URL}/api/auth/login`,
+            { email, password },
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+        );
 
-            const logoutTime = Date.now() + 3600000;
-            localStorage.setItem("logoutTime", logoutTime);
-            scheduleAutoLogout();
+        set((state) => ({
+            isAuthenticated: true,
+            user: response.data.user,
+            error: null,
+            isLoading: false,
+            redirectPath: state.redirectPath || "/"
+        }));
 
+        const logoutTime = Date.now() + 3600000;
+        localStorage.setItem("logoutTime", logoutTime);
+        scheduleAutoLogout();
 
-        } catch (error) {
-            set({ error: error.response?.data?.message || "Error logging in", isLoading: false });
-            throw error;
-        }
-    },
+    } catch (error) {
+        set({ error: error.response?.data?.message || "Error logging in", isLoading: false });
+        throw error;
+    }
+},
+
 
     logout: async () => {
         set({ isLoading: true, error: null });
         try {
-            await axios.post(`${API_URL}/logout`);
+            await axios.post(`${API_URL}/api/auth/logout`);
             set({ user: null, isAuthenticated: false, error: null, isLoading: false, redirectPath: "/" });
         } catch (error) {
             set({ error: "Error logging out", isLoading: false });
@@ -90,7 +95,7 @@ signup: async (email, password, name, number, street, city, zipCode) => {
     verifyEmail: async (code) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/verify-email`, { code });
+            const response = await axios.post(`${API_URL}/api/auth/verify-email`, { code });
             set({ user: response.data.user, isAuthenticated: true, isLoading: false });
             return response.data;
         } catch (error) {
@@ -102,7 +107,7 @@ signup: async (email, password, name, number, street, city, zipCode) => {
     resendVerificationEmail: async (email) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/resend-verification-email`, { email });
+            const response = await axios.post(`${API_URL}/api/auth/resend-verification-email`, { email });
             set({ message: response.data.message, isLoading: false });
             return response.data;
         } catch (error) {
@@ -117,7 +122,7 @@ signup: async (email, password, name, number, street, city, zipCode) => {
     checkAuth: async () => {
         set({ isCheckingAuth: true, error: null });
         try {
-            const response = await axios.get(`${API_URL}/check-auth`);
+            const response = await axios.get(`${API_URL}/api/auth/check-auth`);
             set({ user: response.data.user, isAuthenticated: true, isCheckingAuth: false });
 
             scheduleAutoLogout();
@@ -130,7 +135,7 @@ signup: async (email, password, name, number, street, city, zipCode) => {
     forgotPassword: async (email) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/forgot-password`, { email });
+            const response = await axios.post(`${API_URL}/api/auth/forgot-password`, { email });
             set({ message: response.data.message, isLoading: false });
         } catch (error) {
             set({
@@ -144,7 +149,7 @@ signup: async (email, password, name, number, street, city, zipCode) => {
     resetPassword: async (token, password) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/reset-password/${token}`, { password });
+            const response = await axios.post(`${API_URL}/api/auth/reset-password/${token}`, { password });
             set({ message: response.data.message, isLoading: false });
         } catch (error) {
             set({

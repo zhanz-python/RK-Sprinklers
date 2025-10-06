@@ -41,3 +41,6 @@ console.log("SMTP_HOST:", process.env.SMTP_HOST);
 console.log("SMTP_PORT:", process.env.SMTP_PORT);
 console.log("SMTP_USER:", process.env.SMTP_USER);
 
+app.get("/", (req, res) => {
+  res.send("✅ RK Sprinklers Backend is running fine!");
+});
