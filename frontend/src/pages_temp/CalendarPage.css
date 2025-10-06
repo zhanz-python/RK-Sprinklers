@@ -1,0 +1,52 @@
+/* Disabled / past dates and admin-marked unavailable dates */
+.react-calendar__tile--disabled,
+.admin-unavailable {
+  background-color: #1f1f1f; /* dark gray */
+  color: #aaaaaa;             /* muted gray */
+  opacity: 0.7;
+  position: relative;         /* for pseudo-element */
+  border-radius: 50%;         /* circular tile */
+  cursor: url('/cursors/red-circle.png'), not-allowed; /* custom red circle */
+  transition: all 0.2s ease-in-out;
+}
+
+/* Red diagonal line across the circle */
+.react-calendar__tile--disabled::after,
+.admin-unavailable::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background-color: red;
+  transform: rotate(-45deg);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+/* Enabled / future dates hover effect */
+.react-calendar__tile:hover:not(.react-calendar__tile--disabled):not(.admin-unavailable) {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  color: #ffffff;
+  font-weight: bold;
+  transform: scale(1.05);
+  border-radius: 50%;
+}
+
+/* Highlight today */
+.react-calendar__tile--now {
+  border: 2px solid #10b981; /* bright green */
+  background-color: #2a2a2a;
+  color: #34d399;
+  font-weight: bold;
+  border-radius: 50%;
+}
+
+/* Selected date */
+.react-calendar__tile--active {
+  background: #059669; /* solid green */
+  color: #ffffff;
+  font-weight: bold;
+  border-radius: 50%;
+}
