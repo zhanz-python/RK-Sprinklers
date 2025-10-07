@@ -1,4 +1,4 @@
-import "../../styles/Footer.css";
+import "../../styles/footer.css";
 import footerLogo from "../../src/images/RK Sprinklers.png";
 import { Link } from "react-router-dom";
 
