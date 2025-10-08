@@ -9,6 +9,11 @@ import Footer from "../components/Footer";
 import rkLogo from "../images/RK Sprinklers.png";
 import avatarLogo from "../images/avatar-icon.png";
 
+const BASE_URL =
+  import.meta.env.MODE === "production"
+    ? "https://rk-sprinklers-backend.onrender.com"
+    : "http://localhost:5000";
+
 export default function CalendarPage() {
   const { user, isAuthenticated } = useAuthStore();
   const userId = user?._id;
@@ -57,7 +62,7 @@ export default function CalendarPage() {
 
     const fetchAllSlots = async () => {
       try {
-        const res = await fetch("/api/slots");
+        const res = await fetch(`${BASE_URL}/api/slots`);
         const data = await res.json();
         setAllSlots(data);
 
