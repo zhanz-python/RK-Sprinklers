@@ -66,7 +66,6 @@ signup: async (email, password, name, number, street, city, zipCode) => {
                 redirectPath: state.redirectPath || "/"
             }));
 
-            localStorage.setItem("user", JSON.stringify(response.data.user));
 
             const logoutTime = Date.now() + 3600000;
             localStorage.setItem("logoutTime", logoutTime);
@@ -84,9 +83,6 @@ signup: async (email, password, name, number, street, city, zipCode) => {
         try {
             await axios.post(`${API_URL}/logout`);
             set({ user: null, isAuthenticated: false, error: null, isLoading: false, redirectPath: "/" });
-
-        localStorage.removeItem("user");
-        localStorage.removeItem("logoutTime");
 
         } catch (error) {
             set({ error: "Error logging out", isLoading: false });
@@ -162,16 +158,3 @@ signup: async (email, password, name, number, street, city, zipCode) => {
         }
     },    
 }));
-
-// ✅ Persist login across refreshes (outside create)
-const storedUser = localStorage.getItem("user");
-if (storedUser) {
-  useAuthStore.setState({
-    user: JSON.parse(storedUser),
-    isAuthenticated: true,
-    isCheckingAuth: false,
-  });
-  scheduleAutoLogout();
-} else {
-  useAuthStore.setState({ isCheckingAuth: false });
-}
