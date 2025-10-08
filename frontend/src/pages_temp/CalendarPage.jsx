@@ -62,6 +62,12 @@ export default function CalendarPage() {
       try {
         const res = await fetch(`${API_BASE_URL}/api/slots`);
         const data = await res.json();
+
+      if (!Array.isArray(data)) {
+        console.error("Expected array from /api/slots:", data);
+        return;
+      } 
+        
         setAllSlots(data);
 
         const userSlots = {};
@@ -91,6 +97,12 @@ export default function CalendarPage() {
       try {
         const res = await fetch(`${API_BASE_URL}/api/availability`);
         const data = await res.json();
+
+      if (!Array.isArray(data)) {
+        console.error("Expected array from /api/availability:", data);
+        return;
+      }
+
         const availByDate = {};
         data.forEach((a) => {
           const key = new Date(a.date).toDateString();
