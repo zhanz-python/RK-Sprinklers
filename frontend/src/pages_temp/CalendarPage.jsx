@@ -9,11 +9,6 @@ import Footer from "../components/Footer";
 import rkLogo from "../images/RK Sprinklers.png";
 import avatarLogo from "../images/avatar-icon.png";
 
-const BASE_URL =
-  import.meta.env.MODE === "production"
-    ? "https://rk-sprinklers-backend.onrender.com"
-    : "http://localhost:5000";
-
 export default function CalendarPage() {
   const { user, isAuthenticated } = useAuthStore();
   const userId = user?._id;
@@ -62,7 +57,7 @@ export default function CalendarPage() {
 
     const fetchAllSlots = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/api/slots`);
+        const res = await fetch(`${API_BASE_URL}/api/slots`);
         const data = await res.json();
         setAllSlots(data);
 
@@ -91,7 +86,7 @@ export default function CalendarPage() {
   useEffect(() => {
     const fetchAvailability = async () => {
       try {
-        const res = await fetch("/api/availability");
+        const res = await fetch(`${API_BASE_URL}/api/availability`);
         const data = await res.json();
         const availByDate = {};
         data.forEach((a) => {
@@ -113,7 +108,7 @@ export default function CalendarPage() {
   // Toggle availability (admin only)
   const toggleAvailability = async (dateToToggle) => {
     try {
-      const res = await fetch("/api/availability/toggle", {
+      const res = await fetch(`${API_BASE_URL}/api/availability/toggle`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date: dateToToggle.toISOString() }),
@@ -218,7 +213,7 @@ const handleSlotClick = (slot) => {
       const slotNumber = parseInt(slot.split(" ")[1]);
       const slotDateISO = date.toISOString();
       try {
-        const res = await fetch("/api/slots", {
+        const res = await fetch(`${API_BASE_URL}/api/slots`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId, slotDate: slotDateISO, slotNumber }),
@@ -262,7 +257,7 @@ const handleSlotClick = (slot) => {
         ? submitted.slots.find((s) => s.slot === slotToRemove)?.eventId
         : submitted.eventId);
 
-      await fetch(`/api/slots/${idToDelete}`, { method: "DELETE" });
+      await fetch(`${API_BASE_URL}/api/slots/${idToDelete}`, { method: "DELETE" });
 
       setAllSlots((prev) => prev.filter((s) => s._id !== idToDelete));
 
