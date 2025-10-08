@@ -9,6 +9,9 @@ import Footer from "../components/Footer";
 import rkLogo from "../images/RK Sprinklers.png";
 import avatarLogo from "../images/avatar-icon.png";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+
 export default function CalendarPage() {
   const { user, isAuthenticated } = useAuthStore();
   const userId = user?._id;
