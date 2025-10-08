@@ -9,10 +9,6 @@ import Footer from "../components/Footer";
 import rkLogo from "../images/RK Sprinklers.png";
 import avatarLogo from "../images/avatar-icon.png";
 
-const BASE_URL = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL}/api`
-  : "http://localhost:5000/api";
-
 export default function CalendarPage() {
   const { user, isAuthenticated } = useAuthStore();
   const userId = user?._id;
@@ -61,9 +57,7 @@ export default function CalendarPage() {
 
     const fetchAllSlots = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/slots`, {
-          credentials: "include"
-        });
+        const res = await fetch("/api/slots");
         const data = await res.json();
         setAllSlots(data);
 
@@ -92,9 +86,7 @@ export default function CalendarPage() {
   useEffect(() => {
     const fetchAvailability = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/availability`, {
-          credentials: "include",
-        });
+        const res = await fetch("/api/availability");
         const data = await res.json();
         const availByDate = {};
         data.forEach((a) => {
@@ -116,10 +108,9 @@ export default function CalendarPage() {
   // Toggle availability (admin only)
   const toggleAvailability = async (dateToToggle) => {
     try {
-      const res = await fetch(`${BASE_URL}/availability/toggle`, {
+      const res = await fetch("/api/availability/toggle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ date: dateToToggle.toISOString() }),
       });
       const data = await res.json();
@@ -138,10 +129,7 @@ export default function CalendarPage() {
         );
         for (let slot of slotsToDelete) {
           try {
-            await fetch(`${BASE_URL}/slots/${slot._id}`, { 
-              method: "DELETE",
-              credentials: "include" 
-            });
+            await fetch(`/api/slots/${slot._id}`, { method: "DELETE" });
           } catch (err) {
             console.error("Failed to delete slot:", err);
           }
@@ -225,7 +213,7 @@ const handleSlotClick = (slot) => {
       const slotNumber = parseInt(slot.split(" ")[1]);
       const slotDateISO = date.toISOString();
       try {
-        const res = await fetch(`${BASE_URL}/slots`, {
+        const res = await fetch("/api/slots", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId, slotDate: slotDateISO, slotNumber }),
@@ -269,7 +257,7 @@ const handleSlotClick = (slot) => {
         ? submitted.slots.find((s) => s.slot === slotToRemove)?.eventId
         : submitted.eventId);
 
-      await fetch(`${BASE_URL}/slots/${idToDelete}`, { method: "DELETE", credentials: "include" });
+      await fetch(`/api/slots/${idToDelete}`, { method: "DELETE" });
 
       setAllSlots((prev) => prev.filter((s) => s._id !== idToDelete));
 
