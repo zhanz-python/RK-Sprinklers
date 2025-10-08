@@ -24,7 +24,11 @@ import { useAuthStore } from "./store/authStore.js";
 
 // ✅ ProtectedRoute: requires login AND verified
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, isCheckingAuth } = useAuthStore();
+
+  if (isCheckingAuth) {
+    return <LoadingSpinner />; // wait for session check
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -36,6 +40,7 @@ const ProtectedRoute = ({ children }) => {
 
   return children;
 };
+
 
 // ✅ RedirectAfterAuth: prevent logged-in users from accessing auth pages
 const RedirectAfterAuth = ({ children }) => {
