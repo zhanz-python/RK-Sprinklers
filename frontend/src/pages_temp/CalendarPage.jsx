@@ -60,9 +60,7 @@ export default function CalendarPage() {
 
     const fetchAllSlots = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/slots`, {
-          credentials: "include"
-        });
+        const res = await fetch(`${API_BASE_URL}/api/slots`);
         const data = await res.json();
 
       if (!Array.isArray(data)) {
@@ -97,9 +95,7 @@ export default function CalendarPage() {
   useEffect(() => {
     const fetchAvailability = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/availability`, {
-          credentials: "include"
-        });
+        const res = await fetch(`${API_BASE_URL}/api/availability`);
         const data = await res.json();
 
       if (!Array.isArray(data)) {
@@ -131,7 +127,6 @@ export default function CalendarPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date: dateToToggle.toISOString() }),
-        credentials: "include",
       });
       const data = await res.json();
       const key = new Date(data.date).toDateString();
@@ -149,10 +144,7 @@ export default function CalendarPage() {
         );
         for (let slot of slotsToDelete) {
           try {
-            await fetch(`${API_BASE_URL}/api/slots/${slot._id}`, { 
-              method: "DELETE",
-              credentials: "include" 
-            });
+            await fetch(`/api/slots/${slot._id}`, { method: "DELETE" });
           } catch (err) {
             console.error("Failed to delete slot:", err);
           }
@@ -163,11 +155,6 @@ export default function CalendarPage() {
         setSubmittedSlots((prev) => {
           const updated = { ...prev };
           delete updated[key];
-
-        Object.keys(updated).forEach((dateKey) => {
-          if (dateKey === key) delete updated[dateKey];
-        });          
-
           return updated;
         });
         toast("All slots removed for this unavailable date.", { icon: "🗑️" });
@@ -230,7 +217,7 @@ const handleSlotClick = (slot) => {
                 s.userId === userId
             )
         )
-      : selectedSlots[dateKey] ? [selectedSlots[dateKey]] : [];
+      : [selectedSlots[dateKey]];
 
     if (slotsToSubmit.length === 0) {
       toast.error("No new slots selected.");
@@ -245,7 +232,6 @@ const handleSlotClick = (slot) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId, slotDate: slotDateISO, slotNumber }),
-          credentials: "include",
         });
         const result = await res.json();
         if (!res.ok) throw new Error(result.message || "Slot submission failed");
@@ -286,10 +272,7 @@ const handleSlotClick = (slot) => {
         ? submitted.slots.find((s) => s.slot === slotToRemove)?.eventId
         : submitted.eventId);
 
-      await fetch(`${API_BASE_URL}/api/slots/${idToDelete}`, { 
-        method: "DELETE",
-        credentials: "include", 
-      });
+      await fetch(`${API_BASE_URL}/api/slots/${idToDelete}`, { method: "DELETE" });
 
       setAllSlots((prev) => prev.filter((s) => s._id !== idToDelete));
 
