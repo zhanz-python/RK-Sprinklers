@@ -41,7 +41,7 @@ export const signup = async (req, res) => {
         });
 
         await user.save();
-        generateTokenAndSetCookie(res, user._id);
+        generateTokenAndSetCookie(user._id, res);
         await sendVerificationEmail(user.email, verificationToken);
 
         res.status(201).json({
@@ -100,7 +100,7 @@ export const login = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invalid credentials" });
         }
 
-        generateTokenAndSetCookie(res, user._id);
+        generateTokenAndSetCookie(user._id, res);
 
         user.lastLogin = new Date();
         await user.save();
