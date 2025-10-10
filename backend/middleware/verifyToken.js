@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js"; // adjust path if needed
 
 export const verifyToken = async (req, res, next) => {
+  console.log("Incoming cookies:", req.cookies);
+
   const token = req.cookies.jwt;
   if (!token) {
     return res
