@@ -39,8 +39,14 @@ router.get("/", async (req, res) => {
 router.post("/toggle", async (req, res) => {
   const { date } = req.body;
   try {
-    // Normalize date -> midnight
-    const normalizedDate = new Date(date);
+    let normalizedDate;
+    if (typeof date === "string") {
+      const dateOnly = date.split("T")[0];
+      const [year, month, day] = dateOnly.split("-").map(Number);
+      normalizedDate = new Date(year, month - 1, day);
+    } else {
+      normalizedDate = new Date(date);
+    }
     normalizedDate.setHours(0, 0, 0, 0);
 
     let availability = await Availability.findOne({ date: normalizedDate });
