@@ -109,7 +109,7 @@ export default function CalendarPage() {
 
         const availByDate = {};
         data.forEach((a) => {
-          const key = new Date(a.date).toDateString();
+          const key = new Date(`${a.date}T00:00:00`).toDateString();
           availByDate[key] = a.isAvailable;
         });
         setAvailability(availByDate);
@@ -134,7 +134,7 @@ export default function CalendarPage() {
         credentials: "include",
       });
       const data = await res.json();
-      const key = new Date(data.date).toDateString();
+      const key = new Date(`${data.date}T00:00:00`).toDateString();
 
       setAvailability((prev) => ({ ...prev, [key]: data.isAvailable }));
 
