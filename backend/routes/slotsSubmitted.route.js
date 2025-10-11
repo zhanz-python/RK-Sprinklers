@@ -84,7 +84,6 @@ router.post("/", async (req, res) => {
 
     // Normalize date to midnight
     const slotDateObj = new Date(slotDate);
-    slotDateObj.setHours(0, 0, 0, 0);
 
     // Check availability
     const availability = await Availability.findOne({ date: slotDateObj });
