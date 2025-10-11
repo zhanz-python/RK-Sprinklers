@@ -130,7 +130,7 @@ export default function CalendarPage() {
       const res = await fetch(`${API_BASE_URL}/api/availability/toggle`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: dateToToggle.toLocaleDateString("en-CA") }),
+        body: JSON.stringify({ date: dateToToggle.toISOString() }),
         credentials: "include",
       });
       const data = await res.json();
