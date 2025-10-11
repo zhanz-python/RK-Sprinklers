@@ -109,7 +109,7 @@ export default function CalendarPage() {
 
         const availByDate = {};
         data.forEach((a) => {
-          const key = new Date(`${a.date}T00:00:00`).toDateString();
+          const key = new Date(a.date).toDateString();
           availByDate[key] = a.isAvailable;
         });
         setAvailability(availByDate);
@@ -130,11 +130,11 @@ export default function CalendarPage() {
       const res = await fetch(`${API_BASE_URL}/api/availability/toggle`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: dateToToggle.toLocaleDateString("en-CA") }),
+        body: JSON.stringify({ date: dateToToggle.toISOString() }),
         credentials: "include",
       });
       const data = await res.json();
-      const key = new Date(`${data.date}T00:00:00`).toDateString();
+      const key = new Date(data.date).toDateString();
 
       setAvailability((prev) => ({ ...prev, [key]: data.isAvailable }));
 
