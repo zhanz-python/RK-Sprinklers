@@ -6,14 +6,14 @@ const router = express.Router();
 // --- Auto-delete old availability ---
 const startAutoDeleteAvailability = () => {
   setInterval(async () => {
-    const cutoff = new Date();
+    const now = new Date();
 
     // Cutoff date = availability entries more than 1 month old
-    cutoff.setMonth(cutoff.getMonth() - 1);
-    const cutoffStr = cutoff.toISOString().split("T")[0];
+    const cutoff = new Date();
+    cutoff.setMonth(now.getMonth() - 1);
 
     try {
-      const result = await Availability.deleteMany({ date: { $lt: cutoffStr } });
+      const result = await Availability.deleteMany({ date: { $lt: cutoff } });
       if (result.deletedCount > 0) {
         console.log(`Deleted ${result.deletedCount} availability entries older than 1 month.`);
       }
@@ -39,17 +39,17 @@ router.get("/", async (req, res) => {
 router.post("/toggle", async (req, res) => {
   const { date } = req.body;
   try {
-    if (!date || typeof date !== "string") {
-      return res.status(400).json({ error: "Invalid date format" });
-    }
+    // Normalize date -> midnight
+    const normalizedDate = new Date(date);
+    normalizedDate.setHours(0, 0, 0, 0);
 
-    let availability = await Availability.findOne({ date });
+    let availability = await Availability.findOne({ date: normalizedDate });
     if (availability) {
       availability.isAvailable = !availability.isAvailable;
       await availability.save();
     } else {
       availability = await Availability.create({
-        date,
+        date: normalizedDate,
         isAvailable: true,
       });
     }
