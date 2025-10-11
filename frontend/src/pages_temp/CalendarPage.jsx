@@ -334,6 +334,33 @@ const handleSlotClick = (slot) => {
       isSubmitted = submittedSlots[dateKey]?.slot === slot;
     }
 
+        const handleSaveNote = async (slotId, note) => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/slots/${slotId}/note`, {
+          method: "PUT",
+          headers: { 
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ adminNote: note }),
+          credentials: "include", // important for cookie auth
+        });
+
+        if (!res.ok) throw new Error("Failed to update note");
+
+        const updatedSlot = await res.json();
+
+        // Update state locally
+        setAllSlots((prev) =>
+          prev.map((slot) => (slot._id === updatedSlot._id ? updatedSlot : slot))
+        );
+
+        toast.success("Note saved!");
+      } catch (err) {
+        console.error("Error saving note:", err);
+        toast.error("Error saving note");
+      }
+    };
+
     return (
       <button
         key={slot}
