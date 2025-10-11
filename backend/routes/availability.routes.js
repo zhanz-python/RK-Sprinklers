@@ -35,26 +35,30 @@ router.get("/", async (req, res) => {
   }
 });
 
-// --- Toggle availability ---
 router.post("/toggle", async (req, res) => {
-  const { date } = req.body;
   try {
-    // Normalize date -> midnight
-    const normalizedDate = new Date(date);
-
-    let availability = await Availability.findOne({ date: normalizedDate });
-    if (availability) {
-      availability.isAvailable = !availability.isAvailable;
-      await availability.save();
-    } else {
-      availability = await Availability.create({
-        date: normalizedDate,
-        isAvailable: true,
-      });
+    const { date } = req.body;
+    if (!date) {
+      return res.status(400).json({ error: "Date is required." });
     }
+    const normalizedDate = new Date(date);
+    normalizedDate.setHours(0, 0, 0, 0);
+    console.log("📅 Received date:", date, "→ Normalized:", normalizedDate.toString());
+
+  let availability = await Availability.findOne({ date: normalizedDate });
+
+  if (!availability) {
+    availability = new Availability({ date: normalizedDate, isAvailable: true });
+  } else {
+    availability.isAvailable = !availability.isAvailable;
+  }
+
+  await availability.save();
+
 
     res.json(availability);
   } catch (err) {
+    console.error("Error updating availability:", err);
     res.status(500).json({ error: "Error updating availability" });
   }
 });
