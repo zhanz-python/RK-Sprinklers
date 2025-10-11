@@ -44,7 +44,8 @@ router.post("/toggle", async (req, res) => {
     const normalizedDate = new Date(Date.UTC(
       inputDate.getFullYear(),
       inputDate.getMonth(),
-      inputDate.getDate()
+      inputDate.getDate(),
+      0, 0, 0, 0
     ));
 
     let availability = await Availability.findOne({ date: normalizedDate });
