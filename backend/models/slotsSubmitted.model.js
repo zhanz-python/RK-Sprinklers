@@ -10,24 +10,21 @@ const slotsSubmittedSchema = new mongoose.Schema(
     slotDate: { 
       type: Date, 
       required: true 
-    },
+    },             
     slotNumber: { 
       type: Number, 
       enum: [1, 2, 3], 
       required: true 
-    },
+    }, 
     status: { 
       type: String, 
       enum: ["pending", "approved", "denied"], 
       default: "pending" 
     },
-    adminNote: { 
-      type: String, 
-      default: "" 
-    }
   },
   { timestamps: true }
 );
+
 export const SlotsSubmitted = mongoose.model("SlotsSubmitted", slotsSubmittedSchema);
 
 

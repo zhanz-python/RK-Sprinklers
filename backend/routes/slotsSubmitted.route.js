@@ -144,30 +144,4 @@ router.delete("/:eventId", async (req, res) => {
   }
 });
 
-router.put("/:slotId/note", async (req, res) => {
-  try {
-    const { slotId } = req.params;
-    const { adminNote } = req.body;
-
-    if (!req.user?.isAdmin) {
-      return res.status(403).json({ message: "Only admins can update notes." });
-    }
-
-    const updatedSlot = await SlotsSubmitted.findByIdAndUpdate(
-      slotId,
-      { adminNote },
-      { new: true }
-    );
-
-    if (!updatedSlot) {
-      return res.status(404).json({ message: "Slot not found" });
-    }
-
-    res.json(updatedSlot);
-  } catch (err) {
-    console.error("Error updating admin note:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
 export default router;

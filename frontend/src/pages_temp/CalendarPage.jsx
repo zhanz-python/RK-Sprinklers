@@ -127,10 +127,11 @@ export default function CalendarPage() {
   // Toggle availability (admin only)
   const toggleAvailability = async (dateToToggle) => {
     try {
+      const dateString = dateToToggle.toISOString().split("T")[0];
       const res = await fetch(`${API_BASE_URL}/api/availability/toggle`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: dateToToggle.toISOString() }),
+        body: JSON.stringify({ date: dateString }),
         credentials: "include",
       });
       const data = await res.json();
@@ -333,33 +334,6 @@ const handleSlotClick = (slot) => {
       isSelected = selectedSlots[dateKey] === slot;
       isSubmitted = submittedSlots[dateKey]?.slot === slot;
     }
-
-        const handleSaveNote = async (slotId, note) => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/slots/${slotId}/note`, {
-          method: "PUT",
-          headers: { 
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ adminNote: note }),
-          credentials: "include", // important for cookie auth
-        });
-
-        if (!res.ok) throw new Error("Failed to update note");
-
-        const updatedSlot = await res.json();
-
-        // Update state locally
-        setAllSlots((prev) =>
-          prev.map((slot) => (slot._id === updatedSlot._id ? updatedSlot : slot))
-        );
-
-        toast.success("Note saved!");
-      } catch (err) {
-        console.error("Error saving note:", err);
-        toast.error("Error saving note");
-      }
-    };
 
     return (
       <button
@@ -605,74 +579,45 @@ return (
               ))}
         </div>
 
-{/* Admin-only "All Slots on Date" panel */}
-{isAdmin && (
-  <div className="mt-8">
-    <h2 className="text-2xl font-bold text-green-400 mb-4">
-      All Slots on {dateKey}
-    </h2>
-    <div className="space-y-3">
-      {allSlots
-        .filter((s) => new Date(s.slotDate).toDateString() === dateKey)
-        .map((s) => (
-          <div
-            key={s._id}
-            className="flex flex-col gap-3 p-3 bg-gray-800 rounded-lg border border-gray-700"
-          >
-            {/* Slot Info */}
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-white font-semibold">
-                  Slot {s.slotNumber}
-                </p>
-                <p className="text-gray-400 text-sm">
-                  {s.userName || "Unknown User"} – {s.userPhone || "No phone"}
-                </p>
-                <p className="text-gray-500 text-xs">{s.userAddress}</p>
-              </div>
-              <button
-                onClick={() => handleRemoveChoice(`Slot ${s.slotNumber}`, s._id)}
-                className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg shadow-md"
-              >
-                Delete
-              </button>
-            </div>
-
-            {/* Admin Note Box */}
-            <div className="flex flex-col gap-2">
-              <textarea
-                className="w-full p-2 rounded bg-gray-900 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-                rows="2"
-                placeholder="Add admin note..."
-                value={s.adminNote || ""}
-                onChange={(e) =>
-                  setAllSlots((prev) =>
-                    prev.map((slot) =>
-                      slot._id === s._id
-                        ? { ...slot, adminNote: e.target.value }
-                        : slot
-                    )
-                  )
-                }
-              />
-              <button
-                onClick={() => handleSaveNote(s._id, s.adminNote)}
-                className="self-end px-3 py-1 bg-green-600 hover:bg-green-500 text-white rounded-md text-sm"
-              >
-                Save Note
-              </button>
+        {/* Admin-only "All Slots on Date" panel */}
+        {isAdmin && (
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold text-green-400 mb-4">
+              All Slots on {dateKey}
+            </h2>
+            <div className="space-y-3">
+              {allSlots
+                .filter((s) => new Date(s.slotDate).toDateString() === dateKey)
+                .map((s) => (
+                  <div
+                    key={s._id}
+                    className="flex items-center justify-between p-3 bg-gray-800 rounded-lg border border-gray-700"
+                  >
+                    <div>
+                      <p className="text-white font-semibold">
+                        Slot {s.slotNumber}
+                      </p>
+                      <p className="text-gray-400 text-sm">
+                        {s.userName || "Unknown User"} – {s.userPhone || "No phone"}
+                      </p>
+                      <p className="text-gray-500 text-xs">{s.userAddress}</p>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveChoice(`Slot ${s.slotNumber}`, s._id)}
+                      className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg shadow-md"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
             </div>
           </div>
-        ))}
-    </div>
+        )}
+      </div>
+    </main>
+
+    {/* Footer stays at bottom */}
+    <Footer />
   </div>
-)}
-
-</div>
-</main>
-
-{/* Footer stays at bottom */}
-<Footer />
-</div>
 );
 }
