@@ -6,14 +6,14 @@ const router = express.Router();
 // --- Auto-delete old availability ---
 const startAutoDeleteAvailability = () => {
   setInterval(async () => {
-    const now = new Date();
+    const cutoff = new Date();
 
     // Cutoff date = availability entries more than 1 month old
-    const cutoff = new Date();
-    cutoff.setMonth(now.getMonth() - 1);
+    cutoff.setMonth(cutoff.getMonth() - 1);
+    const cutoffStr = cutoff.toISOString().split("T")[0];
 
     try {
-      const result = await Availability.deleteMany({ date: { $lt: cutoff } });
+      const result = await Availability.deleteMany({ date: { $lt: cutoffStr } });
       if (result.deletedCount > 0) {
         console.log(`Deleted ${result.deletedCount} availability entries older than 1 month.`);
       }
@@ -37,24 +37,20 @@ router.get("/", async (req, res) => {
 
 router.post("/toggle", async (req, res) => {
   try {
-    const { date } = req.body;
-    if (!date) {
-      return res.status(400).json({ error: "Date is required." });
-    }
+    // Normalize date -> midnight
     const normalizedDate = new Date(date);
     normalizedDate.setHours(0, 0, 0, 0);
-    console.log("📅 Received date:", date, "→ Normalized:", normalizedDate.toString());
 
-  let availability = await Availability.findOne({ date: normalizedDate });
-
-  if (!availability) {
-    availability = new Availability({ date: normalizedDate, isAvailable: true });
-  } else {
-    availability.isAvailable = !availability.isAvailable;
-  }
-
-  await availability.save();
-
+    let availability = await Availability.findOne({ date: normalizedDate });
+    if (availability) {
+      availability.isAvailable = !availability.isAvailable;
+      await availability.save();
+    } else {
+      availability = await Availability.create({
+        date: normalizedDate,
+        isAvailable: true,
+      });
+    }
 
     res.json(availability);
   } catch (err) {

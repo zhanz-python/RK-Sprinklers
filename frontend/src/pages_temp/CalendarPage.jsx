@@ -127,10 +127,11 @@ export default function CalendarPage() {
   // Toggle availability (admin only)
   const toggleAvailability = async (dateToToggle) => {
     try {
+      const dateString = dateToToggle.toISOString().split("T")[0];
       const res = await fetch(`${API_BASE_URL}/api/availability/toggle`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: dateToToggle.toISOString() }),
+        body: JSON.stringify({ date: dateString }),
         credentials: "include",
       });
       const data = await res.json();
