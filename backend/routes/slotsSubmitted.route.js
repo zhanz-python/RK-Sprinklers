@@ -41,6 +41,7 @@ router.get("/", async (req, res) => {
     const formattedSlots = slots.map((s) => ({
       ...s,
       slotDate: s.slotDate.toISOString(),
+      slotNotes: s.notes,
       userId: s.userId._id.toString(),
       userName: s.userId.name,
       userPhone: s.userId.number || "",
@@ -118,6 +119,39 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// --- Update a slot ---
+router.post("/update", async (req, res) => {
+  console.log("server heard a call to update")
+  try {
+    const { userId, slotDate, slotNumber, notes } = req.body;
+
+    if (!userId || !slotDate || slotNumber === undefined || slotNumber === null) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Normalize date to midnight
+    const slotDateObj = new Date(slotDate);
+
+    await SlotsSubmitted.findOneAndUpdate(
+      {
+        userId: userId,
+        slotDate: slotDateObj,
+        slotNumber: slotNumber
+      },
+      {
+        notes: notes
+      }
+    )
+
+    res.status(200).json({"message": "slot updated"})
+
+  } catch (err) {
+    console.error("Error in POST /api/slots/edit:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 // --- Delete slot ---
 router.delete("/:eventId", async (req, res) => {

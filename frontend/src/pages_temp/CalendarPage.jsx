@@ -23,6 +23,8 @@ export default function CalendarPage() {
   const [submittedSlots, setSubmittedSlots] = useState({});
   const [allSlots, setAllSlots] = useState([]);
   const [availability, setAvailability] = useState({});
+  const [editingSlot, setEditingSlot] = useState(0);
+  const [notes, setNotes] = useState("");
 
   const isUntoggled = (date) => {
     const key = date.toDateString();
@@ -32,15 +34,15 @@ export default function CalendarPage() {
   const isUnavailable = (date) => {
     const key = date.toDateString();
     return availability[key] === false;
-  };  
+  };
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
 
-  	useEffect(() => {
-	document.title = "RK Sprinklers – Calendar";
-	}, []);
-  
+  useEffect(() => {
+    document.title = "RK Sprinklers – Calendar";
+  }, []);
+
   useEffect(() => {
     const media = window.matchMedia("(max-width: 700px)");
     const handleChange = (e) => setIsMobile(e.matches);
@@ -65,11 +67,11 @@ export default function CalendarPage() {
         });
         const data = await res.json();
 
-      if (!Array.isArray(data)) {
-        console.error("Expected array from /api/slots:", data);
-        return;
-      } 
-        
+        if (!Array.isArray(data)) {
+          console.error("Expected array from /api/slots:", data);
+          return;
+        }
+
         setAllSlots(data);
 
         const userSlots = {};
@@ -102,10 +104,10 @@ export default function CalendarPage() {
         });
         const data = await res.json();
 
-      if (!Array.isArray(data)) {
-        console.error("Expected array from /api/availability:", data);
-        return;
-      }
+        if (!Array.isArray(data)) {
+          console.error("Expected array from /api/availability:", data);
+          return;
+        }
 
         const availByDate = {};
         data.forEach((a) => {
@@ -149,9 +151,9 @@ export default function CalendarPage() {
         );
         for (let slot of slotsToDelete) {
           try {
-            await fetch(`${API_BASE_URL}/api/slots/${slot._id}`, { 
+            await fetch(`${API_BASE_URL}/api/slots/${slot._id}`, {
               method: "DELETE",
-              credentials: "include" 
+              credentials: "include"
             });
           } catch (err) {
             console.error("Failed to delete slot:", err);
@@ -173,42 +175,42 @@ export default function CalendarPage() {
     }
   };
 
-const handleSlotClick = (slot) => {
-  const isUnavailable = availability[dateKey] === false;
-  if (isUnavailable && !isAdmin) return;
+  const handleSlotClick = (slot) => {
+    const isUnavailable = availability[dateKey] === false;
+    if (isUnavailable && !isAdmin) return;
 
-  if (!isAdmin && submittedSlots[dateKey]) {
-    toast.error("You can only have one slot per day. Remove existing slot to change.");
-    return;
-  }
-
-  setSelectedSlots((prev) => {
-    if (isAdmin) {
-      const currentSlots = prev[dateKey] || [];
-      if (currentSlots.includes(slot)) {
-        return { ...prev, [dateKey]: currentSlots.filter((s) => s !== slot) };
-      } else {
-        return { ...prev, [dateKey]: [...currentSlots, slot] };
-      }
-    } else {
-      if (prev[dateKey] === slot) {
-        const updated = { ...prev };
-        delete updated[dateKey];
-        return updated;
-      } else {
-        return { ...prev, [dateKey]: slot };
-      }
+    if (!isAdmin && submittedSlots[dateKey]) {
+      toast.error("You can only have one slot per day. Remove existing slot to change.");
+      return;
     }
-  });
-};
+
+    setSelectedSlots((prev) => {
+      if (isAdmin) {
+        const currentSlots = prev[dateKey] || [];
+        if (currentSlots.includes(slot)) {
+          return { ...prev, [dateKey]: currentSlots.filter((s) => s !== slot) };
+        } else {
+          return { ...prev, [dateKey]: [...currentSlots, slot] };
+        }
+      } else {
+        if (prev[dateKey] === slot) {
+          const updated = { ...prev };
+          delete updated[dateKey];
+          return updated;
+        } else {
+          return { ...prev, [dateKey]: slot };
+        }
+      }
+    });
+  };
 
 
   // Handle slot submission
   const handleSubmit = async () => {
-  if (isUntoggled(date) && !isAdmin) {
-    toast("⚠️ This day isn’t confirmed as available yet. Please check back later.");
-    return;
-  }
+    if (isUntoggled(date) && !isAdmin) {
+      toast("⚠️ This day isn’t confirmed as available yet. Please check back later.");
+      return;
+    }
 
     if (!selectedSlots[dateKey] || !userId) {
       toast.error("Please select a slot before submitting.");
@@ -217,14 +219,14 @@ const handleSlotClick = (slot) => {
 
     const slotsToSubmit = isAdmin
       ? selectedSlots[dateKey].filter(
-          (slot) =>
-            !allSlots.some(
-              (s) =>
-                new Date(s.slotDate).toDateString() === dateKey &&
-                s.slotNumber === parseInt(slot.split(" ")[1]) &&
-                s.userId === userId
-            )
-        )
+        (slot) =>
+          !allSlots.some(
+            (s) =>
+              new Date(s.slotDate).toDateString() === dateKey &&
+              s.slotNumber === parseInt(slot.split(" ")[1]) &&
+              s.userId === userId
+          )
+      )
       : [selectedSlots[dateKey]];
 
     if (slotsToSubmit.length === 0) {
@@ -281,9 +283,10 @@ const handleSlotClick = (slot) => {
         ? submitted.slots.find((s) => s.slot === slotToRemove)?.eventId
         : submitted.eventId);
 
-      await fetch(`${API_BASE_URL}/api/slots/${idToDelete}`, { method: "DELETE",
+      await fetch(`${API_BASE_URL}/api/slots/${idToDelete}`, {
+        method: "DELETE",
         credentials: "include"
-       });
+      });
 
       setAllSlots((prev) => prev.filter((s) => s._id !== idToDelete));
 
@@ -310,6 +313,47 @@ const handleSlotClick = (slot) => {
     } catch (err) {
       toast.error("Failed to remove slot.");
     }
+  };
+
+  const handleEditNotes = (notes, slotNumber) => {
+    setNotes(notes);
+    setEditingSlot(slotNumber)
+  };
+
+  const handleSaveNotes = async (slotDate, slotNumber) => {
+
+    try {
+      const update_url = API_BASE_URL + '/api/slots/update'
+      const res = await fetch(update_url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          slotDate,
+          slotNumber,
+          notes
+        }),
+        credentials: "include"
+      })
+
+      if (res.ok) {
+        setAllSlots((prev) =>
+          prev.map((slot) =>
+            slot.slotNumber === slotNumber
+              ? { ...slot, notes }
+              : slot
+          )
+        );
+      }
+
+      toast.success("Notes saved!")
+
+    } catch (err) {
+      toast.error(err.message);
+    }
+
+    setEditingSlot(0)
+    setNotes("")
   };
 
   const renderSlotButton = (slot) => {
@@ -340,16 +384,15 @@ const handleSlotClick = (slot) => {
         onClick={() => handleSlotClick(slot)}
         disabled={isSubmitted || isTakenByOthers || (isUnavailable && !isAdmin)}
         className={`p-4 rounded-xl border text-white shadow-md transition 
-          ${
-            isSubmitted
-              ? "bg-green-600 border-green-400 cursor-not-allowed"
-              : isTakenByOthers
+          ${isSubmitted
+            ? "bg-green-600 border-green-400 cursor-not-allowed"
+            : isTakenByOthers
               ? "bg-gray-600 border-gray-500 cursor-not-allowed opacity-50"
               : isSelected
-              ? "bg-green-400 border-green-200"
-              : isUnavailable
-              ? "bg-gray-500 border-gray-400 opacity-70 cursor-not-allowed"
-              : "bg-gray-800 border-gray-700 hover:bg-gray-700 hover:scale-105"
+                ? "bg-green-400 border-green-200"
+                : isUnavailable
+                  ? "bg-gray-500 border-gray-400 opacity-70 cursor-not-allowed"
+                  : "bg-gray-800 border-gray-700 hover:bg-gray-700 hover:scale-105"
           }`}
       >
         {slot}
@@ -357,9 +400,9 @@ const handleSlotClick = (slot) => {
     );
   };
 
-return (
-  <div className="flex flex-col min-h-screen">
-    {/* ✅ Mobile Avatar Bar */}
+  return (
+    <div className="flex flex-col min-h-screen">
+      {/* ✅ Mobile Avatar Bar */}
       <div className="mobile-avatar-bar">
         {isAuthenticated ? (
           <span className="mobile-avatar-link">
@@ -463,103 +506,102 @@ return (
         </ul>
       </nav>
 
-      {isSidebarOpen && <div id="overlay" onClick={closeSidebar} aria-hidden="true"></div>}      
+      {isSidebarOpen && <div id="overlay" onClick={closeSidebar} aria-hidden="true"></div>}
 
-    <main className="flex-grow">
-      <div className="max-w-2xl w-full mx-auto mt-12 p-10 bg-gray-900 bg-opacity-80 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 text-center">
-        <Toaster position="top-center" reverseOrder={false} />
+      <main className="flex-grow">
+        <div className="max-w-2xl w-full mx-auto mt-12 p-10 bg-gray-900 bg-opacity-80 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-800 text-center">
+          <Toaster position="top-center" reverseOrder={false} />
 
-        {/* ✅ Back to Dashboard Arrow */}
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="flex items-center text-green-400 hover:text-green-300 mb-6"
-        >
-          ← Back to Dashboard
-        </button>
+          {/* ✅ Back to Dashboard Arrow */}
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center text-green-400 hover:text-green-300 mb-6"
+          >
+            ← Back to Dashboard
+          </button>
 
-        <h1 className="text-4xl font-extrabold mb-6 bg-gradient-to-r from-green-400 to-emerald-600 text-transparent bg-clip-text">
-          Calendar
-        </h1>
+          <h1 className="text-4xl font-extrabold mb-6 bg-gradient-to-r from-green-400 to-emerald-600 text-transparent bg-clip-text">
+            Calendar
+          </h1>
 
-        {isAdmin ? (
-          <p className="text-yellow-400 font-semibold mb-4">🔑 Admin Access</p>
-        ) : (
-          <p className="text-gray-400 mb-4">👤 User Access</p>
-        )}
+          {isAdmin ? (
+            <p className="text-yellow-400 font-semibold mb-4">🔑 Admin Access</p>
+          ) : (
+            <p className="text-gray-400 mb-4">👤 User Access</p>
+          )}
 
-    <div className="flex justify-center mb-4">
-      <Calendar
-        onChange={(newDate) => setDate(newDate)}
-        value={date}
-        tileDisabled={({ date: tileDate }) => {
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          const checkDate = new Date(tileDate);
-          checkDate.setHours(0, 0, 0, 0);
+          <div className="flex justify-center mb-4">
+            <Calendar
+              onChange={(newDate) => setDate(newDate)}
+              value={date}
+              tileDisabled={({ date: tileDate }) => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const checkDate = new Date(tileDate);
+                checkDate.setHours(0, 0, 0, 0);
 
-          if (checkDate < today) return true;
-          if (!isAdmin && isUnavailable(tileDate)) return true;
-          return false;
-        }}
-        tileClassName={({ date: tileDate }) => {
-          const key = tileDate.toDateString();
-          if (availability[key] === false) return "admin-unavailable";
-          if (availability[key] === true) return "admin-available";
-          if (isAdmin && isUntoggled(tileDate)) return "admin-untoggled";
-          return "";
-        }}
-        className="rounded-xl shadow-lg p-4 bg-gray-800 text-white border border-gray-700"
-      />
-    </div>
+                if (checkDate < today) return true;
+                if (!isAdmin && isUnavailable(tileDate)) return true;
+                return false;
+              }}
+              tileClassName={({ date: tileDate }) => {
+                const key = tileDate.toDateString();
+                if (availability[key] === false) return "admin-unavailable";
+                if (availability[key] === true) return "admin-available";
+                if (isAdmin && isUntoggled(tileDate)) return "admin-untoggled";
+                return "";
+              }}
+              className="rounded-xl shadow-lg p-4 bg-gray-800 text-white border border-gray-700"
+            />
+          </div>
 
-        {isAdmin && isUntoggled(date) && (
-          <p className="mt-2 text-yellow-400 font-semibold">
-            ⚠️ This date has not been toggled. Please mark it as Available or Unavailable.
+          {isAdmin && isUntoggled(date) && (
+            <p className="mt-2 text-yellow-400 font-semibold">
+              ⚠️ This date has not been toggled. Please mark it as Available or Unavailable.
             </p>
           )}
 
-        {isAdmin && (
-          <button
-            onClick={() => toggleAvailability(date)}
-            className={`mt-4 px-6 py-3 rounded-xl font-semibold shadow-md text-white transition ${
-              availability[dateKey] === false
+          {isAdmin && (
+            <button
+              onClick={() => toggleAvailability(date)}
+              className={`mt-4 px-6 py-3 rounded-xl font-semibold shadow-md text-white transition ${availability[dateKey] === false
                 ? "bg-green-600 hover:bg-green-500"
                 : "bg-red-600 hover:bg-red-500"
-            }`}
-          >
-            {availability[dateKey] === false ? "Mark Available" : "Mark Unavailable"}
-          </button>
-        )}
+                }`}
+            >
+              {availability[dateKey] === false ? "Mark Available" : "Mark Unavailable"}
+            </button>
+          )}
 
-        <p className="mt-2 text-lg text-gray-300">
-          Selected date:{" "}
-          <span className="font-semibold text-green-400">{dateKey}</span>
-        </p>
-
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {slots.map(renderSlotButton)}
-        </div>
-
-        {selectedSlots[dateKey] && (
-          <p className="mt-4 text-lg text-gray-300">
-            Selected slot{isAdmin ? "s" : ""}:{" "}
-            <span className="font-semibold text-green-400">
-              {isAdmin ? selectedSlots[dateKey].join(", ") : selectedSlots[dateKey]}
-            </span>
+          <p className="mt-2 text-lg text-gray-300">
+            Selected date:{" "}
+            <span className="font-semibold text-green-400">{dateKey}</span>
           </p>
-        )}
 
-        <div className="mt-6 flex justify-center gap-4">
-          <button
-            onClick={handleSubmit}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl shadow-md transition"
-          >
-            Submit Slot
-          </button>
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {slots.map(renderSlotButton)}
+          </div>
 
-          {submittedSlots[dateKey] &&
-            (isAdmin
-              ? submittedSlots[dateKey].slots.map((s) => (
+          {selectedSlots[dateKey] && (
+            <p className="mt-4 text-lg text-gray-300">
+              Selected slot{isAdmin ? "s" : ""}:{" "}
+              <span className="font-semibold text-green-400">
+                {isAdmin ? selectedSlots[dateKey].join(", ") : selectedSlots[dateKey]}
+              </span>
+            </p>
+          )}
+
+          <div className="mt-6 flex justify-center gap-4">
+            <button
+              onClick={handleSubmit}
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl shadow-md transition"
+            >
+              Submit Slot
+            </button>
+
+            {submittedSlots[dateKey] &&
+              (isAdmin
+                ? submittedSlots[dateKey].slots.map((s) => (
                   <button
                     key={s.slot}
                     onClick={() => handleRemoveChoice(s.slot)}
@@ -568,55 +610,78 @@ return (
                     Remove {s.slot}
                   </button>
                 ))
-              : (
-                <button
-                  onClick={handleRemoveChoice}
-                  className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl shadow-md transition"
-                >
-                  Remove Choice
-                </button>
-              ))}
-        </div>
-
-        {/* Admin-only "All Slots on Date" panel */}
-        {isAdmin && (
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold text-green-400 mb-4">
-              All Slots on {dateKey}
-            </h2>
-            <div className="space-y-3">
-              {allSlots
-                .filter((s) => new Date(s.slotDate).toDateString() === dateKey)
-                .map((s) => (
-                  <div
-                    key={s._id}
-                    className="flex items-center justify-between p-3 bg-gray-800 rounded-lg border border-gray-700"
+                : (
+                  <button
+                    onClick={handleRemoveChoice}
+                    className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl shadow-md transition"
                   >
-                    <div>
-                      <p className="text-white font-semibold">
-                        Slot {s.slotNumber}
-                      </p>
-                      <p className="text-gray-400 text-sm">
-                        {s.userName || "Unknown User"} – {s.userPhone || "No phone"}
-                      </p>
-                      <p className="text-gray-500 text-xs">{s.userAddress}</p>
-                    </div>
-                    <button
-                      onClick={() => handleRemoveChoice(`Slot ${s.slotNumber}`, s._id)}
-                      className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg shadow-md"
-                    >
-                      Delete
-                    </button>
-                  </div>
+                    Remove Choice
+                  </button>
                 ))}
-            </div>
           </div>
-        )}
-      </div>
-    </main>
 
-    {/* Footer stays at bottom */}
-    <Footer />
-  </div>
-);
+          {/* Admin-only "All Slots on Date" panel */}
+          {isAdmin && (
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold text-green-400 mb-4">
+                All Slots on {dateKey}
+              </h2>
+              <div className="space-y-3">
+                {allSlots
+                  .filter((s) => new Date(s.slotDate).toDateString() === dateKey)
+                  .map((s) => (
+                    <div
+                      key={s._id}
+                      className="flex items-center justify-between p-3 bg-gray-800 rounded-lg border border-gray-700"
+                    >
+                      <div>
+                        <p className="text-white font-semibold">
+                          Slot {s.slotNumber}
+                        </p>
+                        <p className="text-gray-400 text-sm">
+                          {s.userName || "Unknown User"} – {s.userPhone || "No phone"}
+                        </p>
+                        <p className="text-gray-500 text-xs">{s.userAddress}</p>
+                        {editingSlot != s.slotNumber &&
+                          <p className="text-gray-500 text-xs">{s.notes || "No notes"}</p>
+                        }
+                        {editingSlot == s.slotNumber &&
+                          <textarea
+                            rows={1}
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            className="pl-2 rounded">
+                          </textarea>
+                        }
+                      </div>
+                      {editingSlot != s.slotNumber &&
+                        <button
+                          onClick={() => handleEditNotes(s.notes, s.slotNumber)}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-md"
+                        >Edit</button>
+                      }
+                      {editingSlot == s.slotNumber &&
+                        <button
+                          onClick={() => handleSaveNotes(s.slotDate, s.slotNumber)}
+                          className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg shadow-md"
+                        >Save</button>
+                      }
+                      <button
+                        onClick={() => handleRemoveChoice(`Slot ${s.slotNumber}`, s._id)}
+                        className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg shadow-md"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Footer stays at bottom */}
+      <Footer />
+    </div>
+  );
 }
