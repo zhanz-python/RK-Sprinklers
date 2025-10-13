@@ -21,6 +21,10 @@ const slotsSubmittedSchema = new mongoose.Schema(
       enum: ["pending", "approved", "denied"], 
       default: "pending" 
     },
+    notes: {
+      type: String,
+      default: ""
+    }
   },
   { timestamps: true }
 );
