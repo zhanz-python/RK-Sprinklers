@@ -53,7 +53,7 @@ export default function CalendarPage() {
   const openSidebar = () => setIsSidebarOpen(true);
   const closeSidebar = () => setIsSidebarOpen(false);
 
-  const slots = ["Slot 1", "Slot 2", "Slot 3"];
+  const slots = ["Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5"];
   const dateKey = date.toDateString();
 
   // Fetch all slots

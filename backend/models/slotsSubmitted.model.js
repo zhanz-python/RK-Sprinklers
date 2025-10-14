@@ -13,7 +13,7 @@ const slotsSubmittedSchema = new mongoose.Schema(
     },             
     slotNumber: { 
       type: Number, 
-      enum: [1, 2, 3], 
+      enum: [1, 2, 3, 4, 5], 
       required: true 
     }, 
     status: { 

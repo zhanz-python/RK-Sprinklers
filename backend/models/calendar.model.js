@@ -12,7 +12,7 @@ const calendarSchema = new mongoose.Schema({
   },
   maxSlots: {
     type: Number,
-    default: 3,
+    default: 5,
   },
   requests: [
     {
