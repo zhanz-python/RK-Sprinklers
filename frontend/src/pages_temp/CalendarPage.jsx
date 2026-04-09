@@ -444,15 +444,15 @@ export default function CalendarPage() {
         )}
 
         {isMobile && (
-          <a href="tel:5867138783" className="mobile-call-icon" aria-label="Call RK Sprinklers">
+          <a href="tel:2485372524" className="mobile-call-icon" aria-label="Call RK Sprinklers">
             📞
           </a>
         )}
 
         {!isMobile && (
           <div className="top-navbar-right">
-            <a href="tel:5867138783" className="phone-link">
-              586-713-8783
+            <a href="tel:2485372524" className="phone-link">
+              2485-372-524
             </a>
             {isAuthenticated ? (
               <Link to="/login" className="portal-link">

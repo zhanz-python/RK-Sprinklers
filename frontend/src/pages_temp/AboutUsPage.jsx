@@ -72,7 +72,7 @@ const AboutUsPage = () => {
 
         {isMobile && (
           <a
-            href="tel:5867138783"
+            href="tel:2485372524"
             className="mobile-call-icon"
             aria-label="Call RK Sprinklers"
           >
@@ -82,8 +82,8 @@ const AboutUsPage = () => {
 
         {!isMobile && (
           <div className="top-navbar-right">
-            <a href="tel:5867138783" className="phone-link">
-              586-713-8783
+            <a href="tel:2485372524" className="phone-link">
+              2485-372-524
             </a>
 
             {isAuthenticated ? (
@@ -178,8 +178,8 @@ const AboutUsPage = () => {
             <h2 className="text-2xl font-bold mb-4 text-green-400">Contact Information</h2>
             <p className="text-gray-300">
               Call or text us at{" "}
-              <a href="tel:5867138783" className="underline text-green-400">
-                586-713-8783
+              <a href="tel:2485372524" className="underline text-green-400">
+                2485-372-524
               </a>{" "}
               or visit our{" "}
               <Link to="/contact" className="underline text-green-400">
