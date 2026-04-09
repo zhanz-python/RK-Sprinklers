@@ -79,7 +79,7 @@ const ServicesPage = () => {
 
         {!isMobile && (
           <div className="top-navbar-right">
-            <a href="tel:2485372524" className="phone-link">2485-372-524</a>
+            <a href="tel:2485372524" className="phone-link">248-537-2524</a>
 
             {isAuthenticated ? (
               <Link to="/login" className="portal-link">

@@ -91,7 +91,7 @@ const HomePage = () => {
         {!isMobile && (
           <div className="top-navbar-right">
             <a href="tel:2485372524" className="phone-link">
-              2485-372-524
+              248-537-2524
             </a>
 
             {isAuthenticated ? (

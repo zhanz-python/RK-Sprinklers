@@ -83,7 +83,7 @@ const AboutUsPage = () => {
         {!isMobile && (
           <div className="top-navbar-right">
             <a href="tel:2485372524" className="phone-link">
-              2485-372-524
+              248-537-2524
             </a>
 
             {isAuthenticated ? (
@@ -179,7 +179,7 @@ const AboutUsPage = () => {
             <p className="text-gray-300">
               Call or text us at{" "}
               <a href="tel:2485372524" className="underline text-green-400">
-                2485-372-524
+                248-537-2524
               </a>{" "}
               or visit our{" "}
               <Link to="/contact" className="underline text-green-400">

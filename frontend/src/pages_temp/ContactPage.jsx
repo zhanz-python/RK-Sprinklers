@@ -78,7 +78,7 @@ const ContactPage = () => {
 
         {!isMobile && (
           <div className="top-navbar-right">
-            <a href="tel:2485372524" className="phone-link">2485-372-524</a>
+            <a href="tel:2485372524" className="phone-link">248-537-2524</a>
 
             {isAuthenticated ? (
               <Link to="/login" className="portal-link">
@@ -124,7 +124,7 @@ const ContactPage = () => {
           </p>
 
           <div className="flex flex-col items-center gap-4">
-            <a href="tel:2485372524" className="text-green-400 underline">📞 Call: 2485-372-524</a>
+            <a href="tel:2485372524" className="text-green-400 underline">📞 Call: 248-537-2524</a>
             <a href="mailto:mahumk200@gmail.com" className="text-green-400 underline">✉️ Email: mahumk200@gmail.com</a>
           </div>
         </div>
