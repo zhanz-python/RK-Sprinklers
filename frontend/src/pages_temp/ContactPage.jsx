@@ -73,12 +73,12 @@ const ContactPage = () => {
         )}
 
         {isMobile && (
-          <a href="tel:2485372524" className="mobile-call-icon" aria-label="Call RK Sprinklers">📞</a>
+          <a href="tel:5867138783" className="mobile-call-icon" aria-label="Call RK Sprinklers">📞</a>
         )}
 
         {!isMobile && (
           <div className="top-navbar-right">
-            <a href="tel:2485372524" className="phone-link">248-537-2524</a>
+            <a href="tel:5867138783" className="phone-link">586-713-8783</a>
 
             {isAuthenticated ? (
               <Link to="/login" className="portal-link">
@@ -124,8 +124,8 @@ const ContactPage = () => {
           </p>
 
           <div className="flex flex-col items-center gap-4">
-            <a href="tel:2485372524" className="text-green-400 underline">📞 Call: 248-537-2524</a>
-            <a href="mailto:mahumk200@gmail.com" className="text-green-400 underline">✉️ Email: mahumk200@gmail.com</a>
+            <a href="tel:5867138783" className="text-green-400 underline">📞 Call: 586-713-8783</a>
+            <a href="mailto:info@rksprinklers.org" className="text-green-400 underline">✉️ Email: info@rksprinklers.org</a>
           </div>
         </div>
       </main>

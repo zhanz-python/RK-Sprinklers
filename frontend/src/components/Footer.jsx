@@ -28,7 +28,7 @@ const Footer = () => {
         <div className="footer-contact">
           <h3>Contact Us</h3>
           <p>
-            <a href="tel:+12485372524" className="footer-contact-link"> 📞 248-537-2524</a>
+            <a href="tel:+15867138783" className="footer-contact-link"> 📞 586-713-8783</a>
           </p>
         </div>
       </div>

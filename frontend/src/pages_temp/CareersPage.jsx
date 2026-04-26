@@ -37,7 +37,7 @@ const CareersPage = () => {
       type: "Full-time",
       description:
         "Flexible availability, 40 hours a week, $20/hour starting salary, goes up with experience. Will be taught and trained.",
-      email: "mahumk200@gmail.com",
+      email: "info@rksprinklers.org",
     },
   ];
 
@@ -78,14 +78,14 @@ const CareersPage = () => {
         )}
 
         {isMobile && (
-          <a href="tel:2485372524" className="mobile-call-icon" aria-label="Call RK Sprinklers">
+          <a href="tel:5867138783" className="mobile-call-icon" aria-label="Call RK Sprinklers">
             📞
           </a>
         )}
 
         {!isMobile && (
           <div className="top-navbar-right">
-            <a href="tel:2485372524" className="phone-link">248-537-2524</a>
+            <a href="tel:5867138783" className="phone-link">586-713-8783</a>
             {isAuthenticated ? (
               <Link to="/login" className="portal-link"><span className="portal-icon">👤</span> Welcome, {user?.name}!</Link>
             ) : (
