@@ -29,20 +29,6 @@ const AboutUsPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* --- Mobile Avatar Bar --- */}
-      <div className="mobile-avatar-bar">
-        {isAuthenticated ? (
-          <span className="mobile-avatar-link">
-            <img src={avatarLogo} alt="Customer Avatar" className="mobile-avatar-img" />
-            <span className="ml-2">Welcome, {user?.name}!</span>
-          </span>
-        ) : (
-          <Link to="/login" className="mobile-avatar-link" aria-label="Customer Portal">
-            <img src={avatarLogo} alt="Customer Portal Avatar" className="mobile-avatar-img" />
-          </Link>
-        )}
-      </div>
-
       {/* --- Top Navbar --- */}
       <header className="top-navbar">
         <Link to="/" className="logo-link">
@@ -85,18 +71,6 @@ const AboutUsPage = () => {
             <a href="tel:5867138783" className="phone-link">
               586-713-8783
             </a>
-
-            {isAuthenticated ? (
-              <Link to="/login" className="portal-link">
-                <span className="portal-icon">👤</span>
-                Welcome, {user?.name}!
-              </Link>
-            ) : (
-              <Link to="/login" className="portal-link">
-                <span className="portal-icon">👤</span>
-                Customer Portal
-              </Link>
-            )}
           </div>
         )}
       </header>
